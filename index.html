@@ -4,20 +4,93 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio</title>
-    
+    <title>Riccardo Martinelli</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <header>Portfolio</header>
-    <h1>Ciao</h1>
-    <ul>
-        <li><a href="#about">About</a></li>
-    </ul>
-    <div>Questa è la sezione dove vanno le immagini</div>
-    <div>Questa è la seconda sezione dove vanno le immagini</div>
-    <div>Questa è la terza sezione dove vanno le immagini</div>
-    <img src="img/P1230289.png" alt="immagine di me">
-    <div id="#about">Sono Riccardo Martinelli e da anni attraverso i settori creativi, passando dalla produzione musicale alla computer graphics</div>
 
+    <h1>Portfolio</h1>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/three.js/102/three.js"></script>
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.2/TweenMax.min.js"></script>
+    
+    <script>
+        var scene =  new THREE.Scene();
+
+        var camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000)
+        camera.position.z = 5;
+        var renderer = new THREE.WebGLRenderer({antialias: true});
+
+        renderer.setClearColor("#e5e5e5");
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+
+            camera.updateProjectionMatrix();
+        })
+        var raycaster = new THREE.Raycaster();
+        var mouse = new THREE.Vector2();
+
+        var geometry = new THREE.BoxGeometry(1,1,1);
+        var material = new THREE.MeshLambertMaterial({color: 0xF7F7F7});
+        //var mesh = new THREE.Mesh(geometry,material);
+        //scene.add(mesh);    
+        
+        meshX = -10;
+        for(var i = 0; i<15; i++) {
+            var mesh = new THREE.Mesh(geometry,material);
+            mesh.position.x = (Math.random() -0.5) * 10;
+            mesh.position.y =(Math.random() -0.5) * 10;
+            mesh.position.z = (Math.random() -0.5) * 10;
+            scene.add(mesh);
+            meshX +=1;
+        }
+      
+     
+        
+
+        var light = new THREE.PointLight(0xFFFFFF, 1, 1000);
+        light.position.set(0,0,0);
+        scene.add(light);
+
+        var light = new THREE.PointLight(0xFFFFFF, 2, 1000);
+        light.position.set(0,0,25);
+        scene.add(light);
+
+        var render = function () {
+            requestAnimationFrame(render);
+            
+            renderer.render(scene,camera);
+        }
+
+        function onMouseMove(event) {
+            event.preventDefault();
+
+            mouse.x = (event.clientX / window.innerWidth) *2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) *2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            var intersects = raycaster.intersectObjects(scene.children, true);
+
+            for (var i = 0; i < intersects.length; i++) {
+                this.tl = new TimelineMax();
+                this.tl.to(intersects[i].object.scale, 1, {x: 2, ease: Expo.easeOut})
+                this.tl.to(intersects[i].object.scale, .5, {x: .5, ease: Expo.easeOut})
+                this.tl.to(intersects[i].object.position, .5, {x: 2, ease: Expo.easeOut})
+                this.tl.to(intersects[i].object.rotation, .5, {y: Math.PI*.5, ease: Expo.easeOut}, "=-1.5")
+            }
+        }
+        
+        render();
+
+
+         
+        window.addEventListener('mousemove', onMouseMove);
+        
+    </script>
+    
 </body>
 </html>
